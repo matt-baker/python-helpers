@@ -1,6 +1,9 @@
 """
 	Processes pg_dump output
 	Looks for CREATE FUNCTION and saves function to file
+		function is saved as functionName___functionHash. The functionHash is to account for duplicate function names
+	Also collects metadata about where the function is in the output
+
 """
 import hashlib,os, sys
 
@@ -77,5 +80,8 @@ class exportPostgres:
 
 if __name__ == '__main__':
 
-	process = exportPostgres()
-	process.getFileContents(sys.argv[1])
+	if len(sys.argv) == 1:
+		print 'No pg_dump file specified'
+	else:
+		process = exportPostgres()
+		process.getFileContents(sys.argv[1])
