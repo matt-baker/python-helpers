@@ -83,5 +83,11 @@ if __name__ == '__main__':
 	if len(sys.argv) == 1:
 		print 'No pg_dump file specified'
 	else:
-		process = exportPostgres()
-		process.getFileContents(sys.argv[1])
+		# Check that the file exists
+		if os.path.isfile(sys.argv[1]):
+			process = exportPostgres()
+			process.getFileContents(sys.argv[1])
+		else:
+			print 'Not a valid file'
+
+		
