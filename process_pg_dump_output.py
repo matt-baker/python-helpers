@@ -1,5 +1,6 @@
 """
-	Processes pg_dump output
+	Processes pg_dump output so that it can be checked into Git
+	
 	Looks for CREATE FUNCTION and saves function to file
 		function is saved as functionName___functionHash. The functionHash is to account for duplicate function names
 	Also collects metadata about where the function is in the output
@@ -62,9 +63,12 @@ class exportPostgres:
 	def exportFunction(self,thisFunction,startsAt,numberOfRows):
 		# Save function to file
 		
-		# Wrangle heading
 		functionName=str(thisFunction[:1])
+		
+		# Hash for file name
 		functionNameHash=str(hashlib.sha1(str(thisFunction)).hexdigest())
+		
+		# Wrangle name
 		functionName=functionName.split(';')
 		functionName=str(functionName[0])
 		functionName=functionName[11:]
