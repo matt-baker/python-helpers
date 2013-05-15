@@ -35,7 +35,7 @@ class exportPostgres:
 					thisFunction.append(line)
 			
 				elif checkFor in line and counting == True:
-					# New function, handle input and reset this FunctionCounter
+					# New function, handle previous function and reset this FunctionCounter
 					self.exportFunction(thisFunction,masterCount,thisFunctionCounter)
 			
 					# Reset thisFunction
