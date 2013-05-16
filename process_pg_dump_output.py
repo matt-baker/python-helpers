@@ -1,6 +1,8 @@
 """
 	Processes pg_dump output so that it can be checked into Git
 	
+	Expects one arg - the file name for pg_dump output
+	
 	Looks for CREATE FUNCTION and saves function to file
 		function is saved as functionName___functionHash. The functionHash is to account for duplicate function names
 	Also collects metadata about where the function is in the output
