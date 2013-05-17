@@ -71,6 +71,9 @@ class exportPostgres:
 		functionNameHash=str(hashlib.sha1(str(thisFunction)).hexdigest())
 		
 		# Wrangle name
+		# -- Name: functionName(); Type: FUNCTION; Schema ...
+		# Becomes functionName
+		
 		functionName=functionName.split(';')
 		functionName=str(functionName[0])
 		functionName=functionName[11:]
@@ -78,7 +81,7 @@ class exportPostgres:
 		functionName=functionName[0]
 
 		# Write function to file
-		functionFileName=self.outputDir+'/'+functionName+'___'+functionNameHash+'.txt'
+		functionFileName=self.outputDir+'/'+functionName+'___'+functionNameHash+'.sql'
 		with open(functionFileName, 'w') as thisFile:
 			#thisFile.write('Metadata: Starts on line '+str(startsAt)+', '+str(numberOfRows)+' rows')
 			for line in thisFunction:
