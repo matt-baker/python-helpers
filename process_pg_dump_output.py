@@ -1,6 +1,6 @@
 """
-	Processes pg_dump output so that it can be checked into Git
-	
+	Processes pg_dump output to extract functions to individual text files. I used it as a workaround to get these into Git.
+		
 	Expects one arg - the file name for pg_dump output
 	
 	Looks for CREATE FUNCTION and saves function to file
@@ -37,7 +37,7 @@ class exportPostgres:
 					thisFunction.append(line)
 			
 				elif checkFor in line and counting == True:
-					# New function, handle previous function and reset this FunctionCounter
+					# New function, handle previous function and reset thisFunctionCounter
 					self.exportFunction(thisFunction,masterCount,thisFunctionCounter)
 			
 					# Reset thisFunction
