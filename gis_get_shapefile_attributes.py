@@ -1,6 +1,6 @@
 """"
   1. Reads directory of shapefiles
-	2. Returns attributes of files (also collects spatial metadata and feld name metadata. Not currently returned by function)
+  2. Returns attributes of files (also collects spatial metadata and feld name metadata. Not currently returned by function)
 
 """
 class Gis(object):
