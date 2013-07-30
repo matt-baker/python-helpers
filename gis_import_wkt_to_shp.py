@@ -1,7 +1,7 @@
 """"
   1. Reads directory of shapefiles
   2. Convert CSV with WKT into shp
-    	CSV is in format of value, value, WKT(value, value). Python csv reader breaks, needs some formatting
+  		CSV is in format of value, value, WKT(value, value). Python csv reader breaks, needs some formatting
   3. Output to shapefile
 
 """
@@ -50,6 +50,7 @@ class Gis(object):
 			raise e
 		
 import arcpy
+from arcpy import env
 import csv
 import os
 
@@ -57,11 +58,20 @@ import os
 if __name__ == "__main__":
 	g = Gis()
 
-	gis_directory="C:\\tmp\WKT"
+	gis_directory="C:/tmp/WKT"
 
 	files=g.get_directory_contents(gis_directory)
 	for f in files:
 		# Create shapefile
+		env.workspace = "C:/tmp/WKT"
+		out_path = "C:/tmp/WKT"
+		out_name = "output.shp"
+		geometry_type = "POLYLINE"
+		has_m = "ENABLED"
+		has_z = "ENABLED"
+
+		srs = arcpy.SpatialReference("Hawaii Albers Equal Area Conic")
+		#arcpy.CreateFeatureclass_management(out_path, out_name, geometry_type, has_m, has_z, srs)
 
 		# Parse csv content
 		g.parse_csv_contents(f)	
