@@ -1,23 +1,30 @@
 """"
-  1. Reads directory of shapefiles
+  1. Reads directory of CSV
   2. Convert CSV with WKT into shp
-  		CSV is in format of value, value, WKT(value, value). Python csv reader breaks, needs some formatting
+  		CSV is in format of value, value, WKT(value, value). Includes some manipulation for correcting csv input
   3. Output to shapefile
 
 """
 class Gis(object):
 
-	input_files = ['.csv'] 
+	input_files = ['.csv']
+	srs = 102384	# http://resources.arcgis.com/en/help/main/10.1/018z/pdf/projected_coordinate_systems.pdf
+	workspace = "C:\\tmp\\WKT"
 		
+	def create_shapefile(self,output_name,geometry_type,template,has_z,has_m):
+		srs = arcpy.SpatialReference(self.srs)
+		arcpy.CreateFeatureclass_management(self.workspace, output_name, geometry_type, template, has_m, has_z, srs)
+
+		# Create fields in feature class
+		arcpy.AddField_management(out_name,"myField","TEXT",3,"",3)
+
+
 	def get_directory_contents(self,directory):
-
 		output = []
-
 		directory_contents = os.listdir(directory)
 		for f in directory_contents:
 			if f.endswith(self.input_files[0]):
 				output.append(os.path.join(directory,f))
-
 		return output
 
 	def parse_csv_contents(self,file_path):
@@ -43,27 +50,26 @@ class Gis(object):
 
 					# Update start of LINESTRING
 					if wkt_geom_raw[0].startswith('LINESTRING'):
-						wkt_geom_raw[0]=wkt_geom_raw[0].replace('LINESTRING','LINESTRINGZM')
-		
-	
-					final_wkt=', '.join(wkt_geom_raw) # Tidy up input
-					esri_geom = arcpy.FromWKT(final_wkt,arcpy.SpatialReference(102384))
+						wkt_geom_raw[0]=wkt_geom_raw[0].replace('LINESTRING','LINESTRINGZM') # has z,m values
+						final_wkt=', '.join(wkt_geom_raw) # Convert list to string for arcpy.FromWKT
+						esri_geom = arcpy.FromWKT(final_wkt,arcpy.SpatialReference(self.srs)) # Create ESRI geom
 					
-
-					# Add to shapefile
-					cur = arcpy.InsertCursor('C:/tmp/WKT/output.shp')
-					feat = cur.newRow()
-					feat.shape = esri_geom
+						# Add to shapefile
+						cur = arcpy.InsertCursor('C:/tmp/WKT/output.shp')
+						feat = cur.newRow()
+						feat.shape = esri_geom
 					
+						feat.setValue('myField',output_values[0])
 
-					cur.insertRow(feat)
 
+						cur.insertRow(feat)
 					
-					#raise Exception('Stop drop and roll')
-			
 		except Exception, e:
 			raise e
 		
+	def set_feature_row(self):
+		pass
+
 import arcpy
 from arcpy import env
 import csv
@@ -73,25 +79,18 @@ import os
 if __name__ == "__main__":
 	g = Gis()
 
-	gis_directory="C:/tmp/WKT"
+	gis_directory=g.workspace
 
 	files=g.get_directory_contents(gis_directory)
 	for f in files:
 		# Create shapefile
-		env.workspace = "C:/tmp/WKT"
+		env.workspace = g.workspace
 		env.overwriteOutput = True
 
-		out_path = "C:/tmp/WKT"
-		out_name = "output.shp" # use input file name
-		geometry_type = "POLYLINE"
-		template = ""
-		has_m = "ENABLED"
-		has_z = "ENABLED"
+		# Use csv file name
+		print os.path.splitext(f)[0]
+		out_name='output.shp'
+		#g.create_shapefile(out_name,'POLYLINE','','ENABLED','ENABLED')
 
-		# http://resources.arcgis.com/en/help/main/10.1/018z/pdf/projected_coordinate_systems.pdf
-		srs = arcpy.SpatialReference(102384)
-		arcpy.CreateFeatureclass_management(out_path, out_name, geometry_type, template, has_m, has_z, srs)
-
-		# Parse csv content
-		g.parse_csv_contents(f)	
-		
+		# Parse csv content and write to feature class
+		#g.parse_csv_contents(f)		
