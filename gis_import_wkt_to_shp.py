@@ -29,22 +29,37 @@ class Gis(object):
 					
 					# Find start of WKT value
 					for item in row:
+						
 						if item.startswith('LINESTRING') is True:
 							wkt_start=row.index(item)
-
+							
 					# Check for no geom
 					if wkt_start is None:
 						raise Exception('No WKT found')
 
 					# Recreate WKT value												
 					output_values=row[:wkt_start]
-					wkt_geom=row[wkt_start:]
-					output_values.append(wkt_geom)
+					wkt_geom_raw=row[wkt_start:]
+
+					# Update start of LINESTRING
+					if wkt_geom_raw[0].startswith('LINESTRING'):
+						wkt_geom_raw[0]=wkt_geom_raw[0].replace('LINESTRING','LINESTRINGZM')
+		
+	
+					final_wkt=', '.join(wkt_geom_raw) # Tidy up input
+					esri_geom = arcpy.FromWKT(final_wkt,arcpy.SpatialReference(102384))
+					
 
 					# Add to shapefile
+					cur = arcpy.InsertCursor('C:/tmp/WKT/output.shp')
+					feat = cur.newRow()
+					feat.shape = esri_geom
+					
 
-					print output_values
-					raise Exception('Stop drop and roll')
+					cur.insertRow(feat)
+
+					
+					#raise Exception('Stop drop and roll')
 			
 		except Exception, e:
 			raise e
@@ -64,14 +79,18 @@ if __name__ == "__main__":
 	for f in files:
 		# Create shapefile
 		env.workspace = "C:/tmp/WKT"
+		env.overwriteOutput = True
+
 		out_path = "C:/tmp/WKT"
-		out_name = "output.shp"
+		out_name = "output.shp" # use input file name
 		geometry_type = "POLYLINE"
+		template = ""
 		has_m = "ENABLED"
 		has_z = "ENABLED"
 
-		srs = arcpy.SpatialReference("Hawaii Albers Equal Area Conic")
-		#arcpy.CreateFeatureclass_management(out_path, out_name, geometry_type, has_m, has_z, srs)
+		# http://resources.arcgis.com/en/help/main/10.1/018z/pdf/projected_coordinate_systems.pdf
+		srs = arcpy.SpatialReference(102384)
+		arcpy.CreateFeatureclass_management(out_path, out_name, geometry_type, template, has_m, has_z, srs)
 
 		# Parse csv content
 		g.parse_csv_contents(f)	
