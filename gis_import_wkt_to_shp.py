@@ -18,18 +18,17 @@ class Gis(object):
 		# Create fields in feature class
 		arcpy.AddField_management(out_name,"myField","TEXT",3,"",3)
 
-
 	def get_directory_contents(self,directory):
 		output = []
 		directory_contents = os.listdir(directory)
 		for f in directory_contents:
 			if f.endswith(self.input_files[0]):
-				output.append(os.path.join(directory,f))
+				output.append(f)
 		return output
 
-	def parse_csv_contents(self,file_path):
+	def parse_csv_contents(self,file_name):
 		try:
-
+			file_path=self.workspace+'\\'+file_name;
 			with open(file_path, 'rb') as this_file:
 				reader = csv.reader(this_file, delimiter=',')
 				for row in reader:
@@ -61,7 +60,6 @@ class Gis(object):
 					
 						feat.setValue('myField',output_values[0])
 
-
 						cur.insertRow(feat)
 					
 		except Exception, e:
@@ -87,10 +85,10 @@ if __name__ == "__main__":
 		env.workspace = g.workspace
 		env.overwriteOutput = True
 
-		# Use csv file name
-		print os.path.splitext(f)[0]
-		out_name='output.shp'
-		#g.create_shapefile(out_name,'POLYLINE','','ENABLED','ENABLED')
+		# Use csv file name for shp name
+		out_name=f[:-4]+'.shp'# remove file extension
+		g.create_shapefile(out_name,'POLYLINE','','ENABLED','ENABLED')
 
 		# Parse csv content and write to feature class
-		#g.parse_csv_contents(f)		
+		g.parse_csv_contents(f)		
+		
