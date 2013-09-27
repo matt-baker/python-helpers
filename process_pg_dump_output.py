@@ -8,7 +8,9 @@
 	Also collects metadata about where the function is in the output
 
 """
-import hashlib,os, sys
+import hashlib
+import os
+import sys
 
 class exportPostgres:
 	
