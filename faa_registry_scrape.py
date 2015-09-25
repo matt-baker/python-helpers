@@ -66,5 +66,5 @@ if __name__ == '__main__':
 	for nnumber in n_numbers:
 		csv_data.append(get_faa_data(nnumber))
 
-  # Write data to CSV
+	# Write data to CSV
 	write_to_csv(csv_data)
