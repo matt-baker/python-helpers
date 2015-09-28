@@ -29,16 +29,16 @@ def get_faa_data(nnumber):
 
 		# Extract data needed
 		if len(this_row) > 0:
-			if this_row[0] == 'Manufacturer Name':
+			if this_row[0] == 'Manufacturer Name' and 'Manufacturer' not in output_data:
 				output_data['Manufacturer']=str(this_row[1])
 
-			if this_row[0] == 'Model':
+			if this_row[0] == 'Model' and 'Model' not in output_data:
 				output_data['Model']=str(this_row[1])
 
-			if this_row[0] == 'Type Aircraft':
+			if this_row[0] == 'Type Aircraft' and 'Type Aircraft' not in output_data:
 				output_data['TypeAircraft']=str(this_row[1])
 
-			if 'Type Engine' in this_row:
+			if 'Type Engine' in this_row and 'TypeEngine' not in output_data:
 				output_data['TypeEngine']=str(this_row[3])
 
 	# Check the fields are populated with data
